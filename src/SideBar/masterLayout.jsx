@@ -76,7 +76,7 @@ const Sidebar = () => {
             placeholder="Search..."
             className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C42323] focus:border-transparent"
           />
-        </div>
+        </div>  
 
         
         <div className="flex items-center gap-4 text-[#C42323]">
@@ -112,7 +112,7 @@ const Sidebar = () => {
         </div>
 
         
-        <nav className="flex-1 overflow-y-auto py-4 px-3">
+        <nav className="flex-1 overflow-y-auto py-4 px-3 scrollbar-hide">
           <div className="space-y-1">
             {menuItems.map(({ id, label, icon: Icon, path }) => (
               <button
