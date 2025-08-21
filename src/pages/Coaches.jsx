@@ -9,7 +9,7 @@ const CoachesCard = () => {
       id: 1,
       name: "Dhruv",
       position: "Fitness Coach",
-      image:  dhruv ,
+      image:  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face",
       specialties: ["Weight Loss", "Strength Training", "Cardio"],
       
     },

@@ -1,16 +1,34 @@
+// src/api/services/eventServices.js
+import authService from '../services/authService'; // Import your auth service
+
 const API_BASE_URL = 'http://localhost:3000/api/v1';
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzaHUwNzA1MDAwQGdtYWlsLmNvbSIsImlkIjoiNjg4YjUxMTg4NWU1ZTU0NzI5MGM2ZGI4Iiwic2Nob29sSWQiOiI2ODg5MTZmODNjNmZhYWYwMGU5OTEwNmUiLCJpYXQiOjE3NTQ1NTkwNzQsImV4cCI6MTc1NTE2Mzg3NH0.cv5xEmxBz7xUdxzTrKiLgk8RBjJsQPUGqfT5l3brvs4';
 
 class EventService {
+  // Helper method to get auth headers
+  static getAuthHeaders() {
+    const token = authService.getToken();
+    if (!token) {
+      throw new Error('No authentication token found. Please login again.');
+    }
+    
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    };
+  }
+
   static async getEvents() {
     try {
       const response = await fetch(`${API_BASE_URL}/School/getEvents`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${AUTH_TOKEN}`,
-        },
+        headers: this.getAuthHeaders(),
       });
+
+      if (response.status === 401) {
+        // Token expired or invalid
+        authService.logout();
+        throw new Error('Session expired. Please login again.');
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -29,16 +47,18 @@ class EventService {
     }
   }
 
-  // New method to get user-created events
+  // Get user-created events
   static async getUserEvents() {
     try {
       const response = await fetch(`${API_BASE_URL}/School/getUserEvent`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${AUTH_TOKEN}`,
-        },
+        headers: this.getAuthHeaders(),
       });
+
+      if (response.status === 401) {
+        authService.logout();
+        throw new Error('Session expired. Please login again.');
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -58,9 +78,14 @@ class EventService {
     }
   }
 
-  // New method to create an event
+  // Create an event
   static async createEvent(eventData) {
     try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No authentication token found. Please login again.');
+      }
+
       const formData = new FormData();
       
       // Append all event data to FormData
@@ -73,10 +98,16 @@ class EventService {
       const response = await fetch(`${API_BASE_URL}/School/createEvent`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${AUTH_TOKEN}`,
+          'Authorization': `Bearer ${token}`,
+          // Don't set Content-Type for FormData, let browser set it with boundary
         },
         body: formData,
       });
+
+      if (response.status === 401) {
+        authService.logout();
+        throw new Error('Session expired. Please login again.');
+      }
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -87,6 +118,27 @@ class EventService {
       return result;
     } catch (error) {
       console.error('Error creating event:', error);
+      throw error;
+    }
+  }
+
+  // Alternative method using the authService's authenticatedRequest
+  static async getEventsUsingAuthService() {
+    try {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/School/getEvents`);
+      return response.success ? response.data : response;
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      throw error;
+    }
+  }
+
+  static async getUserEventsUsingAuthService() {
+    try {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/School/getUserEvent`);
+      return response.Events ? { localEvents: response.Events, globalEvents: [] } : response;
+    } catch (error) {
+      console.error('Error fetching user events:', error);
       throw error;
     }
   }
