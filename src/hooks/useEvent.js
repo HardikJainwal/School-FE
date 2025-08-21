@@ -7,13 +7,21 @@ export const useEvents = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filter, setFilter] = useState('all'); // 'all' or 'created-by-us'
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (eventFilter = 'all') => {
     try {
       setLoading(true);
       setError(null);
       
-      const eventData = await EventService.getEvents();
+      let eventData;
+      
+      if (eventFilter === 'created-by-us') {
+        eventData = await EventService.getUserEvents();
+      } else {
+        eventData = await EventService.getEvents();
+      }
+      
       const combinedEvents = EventService.combineEvents(eventData);
       
       // Transform API data to match your component's expected format
@@ -46,18 +54,25 @@ export const useEvents = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    fetchEvents(filter);
+  }, [filter]);
 
-  // Function to refetch events (useful for refresh functionality)
+  // Function to change filter
+  const changeFilter = (newFilter) => {
+    setFilter(newFilter);
+  };
+
+
   const refetchEvents = () => {
-    fetchEvents();
+    fetchEvents(filter);
   };
 
   return {
     events,
     loading,
     error,
+    filter,
     refetchEvents,
+    changeFilter,
   };
 };

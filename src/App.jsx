@@ -3,6 +3,9 @@ import Sidebar from './SideBar/masterLayout.jsx';
 // import Sidebar from '../SideBar/masterLayout.jsx';
 import Dashboard from './pages/Dashboard';
 import EventsPage from './pages/Events.jsx';
+import CoachesCard from './pages/Coaches.jsx';
+import Student from './pages/Student.jsx';
+import AppointmentPage from './pages/Apppointment.jsx';
 // import Appointments from './pages/Appointments';
 // ... other page imports
 
@@ -15,6 +18,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/events" element={<EventsPage/>}/>
+            <Route path='/coaches' element={<CoachesCard/>}/> 
+            <Route path='/students' element={<Student/>}/>  
+            <Route path='/appointments' element={<AppointmentPage/>}/>       
             {/* <Route path="/appointments" element={<Appointments />} />
             <Route path="/students" element={<Students />} />
             <Route path="/doctors" element={<Doctors />} />

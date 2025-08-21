@@ -80,7 +80,7 @@ const Dashboard = () => {
         <div className="mb-8 px-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 bg-purple-100 rounded-lg">
-            <Clock className="w-5 h-5 text-purple-600" />
+            <Clock className="w-8 h-8 text-purple-600" />
           </div>
           <h2 className="text-4xl font-bold text-[#2C8C91]">Today's Schedule</h2>
         </div>
